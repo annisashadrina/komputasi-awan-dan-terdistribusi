@@ -8,20 +8,35 @@
 | [Fadia Nabila Shifa] | [103072400066] | [pitfall/bagian yang dikerjakan] |
 | [Aryo Abdillah Ainnurrofiq] | [103072400006] | [pitfall/bagian yang dikerjakan] |
 
-## Pitfall 1: [semua modul berebut resource yang sama] — ditulis oleh [Annisa N Shadrina]
+## Pitfall 1: Semua modul berebut resource yang sama (Monolithic Resource Contention / SPOF) — ditulis oleh Annisa N Shadrina
 
-**Bukti di skenario:** Saat trafik naik, satu server yang menangani semua modul (pesanan, pembayaran, notifikasi kurir) kewalahan karena semuanya berjalan di satu proses monolitik yang sama
+**Bukti di skenario:** Saat trafik naik, satu server yang menangani semua modul (pesanan, pembayaran, notifikasi kurir) kewalahan karena semuanya berjalan di satu proses monolitik yang sama.
 
-**Kenapa ini keliru:** Dari kalimat tersebut, yang menarik menurut saya bukan cuma servernya "kewalahan", tetapi kenapa satu peningkatan traffic bisa membuat beberapa bagian sistem ikut terdampak, walaupun sebenarnya belum tentu semua modul sedang sibuk dengan tingkat yang sama
-sebelum traffic meningkat, sistemnya yang kami lihat seperti ini :
-user - foodgo server, lalu membawahi order, payment, dan notification. yang menyebabkan ketiga fungsi itu berada dalam satu server dan satu proses, jadi foofgo belum memisahkan resource untuk masing-masing fungsi
+**Kenapa ini keliru:** Dari kalimat tersebut, yang menarik menurut saya bukan cuma servernya "kewalahan", tetapi kenapa satu peningkatan traffic bisa membuat beberapa bagian sistem ikut terdampak, walaupun sebenarnya belum tentu semua modul sedang sibuk dengan tingkat yang sama.
+
+Sebelum traffic meningkat, arsitektur sistem yang kami lihat seperti ini:
+User -> Server FoodGo -> membawahi modul Order, Payment, dan Notification sekaligus.
+
+Hal ini menyebabkan ketiga fungsi/modul berada dalam satu server dan satu proses monolitik yang sama, jadi FoodGo belum memisahkan resource (CPU, Memory, Thread Pool, DB Connection Pool) untuk masing-masing fungsi. Menganggap satu server monolitik bisa terus dipaksa menampung semua modul saat trafik melonjak adalah asumsi yang keliru. Di sistem terdistribusi, begitu satu modul kewalahan makan resource, seluruh server bakal terancam mati dan modul lain yang sebenarnya tidak terlalu sibuk ikut terseret tumbang.
 
 
-**Dampak ke FoodGo:** [mekanisme kegagalan konkret]
+**Dampak ke FoodGo:** 
+Mekanisme kegagalannya terjadi secara berantai (cascading failure) seperti ini:
+1. **Lonjakan Jam Makan Siang / Promo:** Ribuan pengguna melakukan checkout secara bersamaan. Modul pesanan mendadak memakan resource CPU tinggi dan membuka banyak koneksi ke database.
+2. **Resource Monolitik Ludes:** Karena thread pool dan database connection pool sifatnya global (dipakai bersama oleh modul pesanan, pembayaran, dan notifikasi kurir), modul pesanan mengambil hampir seluruh slot koneksi dan thread yang ada.
+3. **Modul Lain Tersandera (Bottleneck):** Ketika modul pembayaran dipanggil dan mengalami sedikit kelambatan (misalnya menunggu respon pihak ketiga), modul ini menahan sisa thread yang tersisa. Akhirnya, tidak ada lagi thread bebas di server untuk memproses request baru yang masuk.
+4. **RAM Membengkak & OOM Killer:** Antrean request yang terus menumpuk di memori membuat penggunaan RAM membengkak drastis hingga batas maksimum server.
+5. **Crash Total:** Server kehabisan resource dan memicu sistem operasi melakukan *Out of Memory (OOM) Killer* atau membuat proses aplikasi *freeze* total. Dampaknya, seluruh aplikasi FoodGo tumbang dan harus di-restart manual oleh tim devops. Fitur ringan seperti sekadar mengecek notifikasi kurir pun ikut mati total padahal tidak ada masalah pada modul tersebut.
 
-**Solusi desain awal:** [usulan solusi]
+**Solusi desain awal:** 
+Untuk skala tim startup, solusinya tidak perlu langsung bikin microservices yang sangat kompleks, tapi bisa diterapkan langkah desain terpisah secara bertahap:
+1. **Pemecahan Proses (Process Decoupling):** Pisahkan eksekusi modul ke dalam proses yang berbeda. Minimal, bedakan proses antara API Utama (Pesanan), Worker Pembayaran, dan Worker Notifikasi.
+2. **Antrean Asinkron (Message Queue):** Ubah proses notifikasi kurir agar bersifat asinkron (*non-blocking*). Modul pesanan tidak perlu menunggu notifikasi terkirim; cukup kirim event/pesan ke message queue (seperti RabbitMQ atau Redis Queue) agar dikerjakan di background oleh worker notifikasi secara independen.
+3. **Isolasi Resource dengan Container (Docker):** Bungkus tiap service/worker ke dalam container Docker masing-masing dengan alokasi batas CPU dan RAM yang jelas. Jika worker notifikasi mengalami *memory leak* atau kebanjiran job, hanya container notifikasi yang restart, sedangkan server pesanan tetap bisa melayani transaksi pengguna.
 
-**Trade-off:** [apa yang dikorbankan/risiko dari solusi ini]
+**Trade-off:** 
+1. **Kompleksitas Operasional & Monitoring:** Tim engineering FoodGo yang awalnya hanya mengelola 1 proses aplikasi kini harus mengelola dan memantau beberapa service, proses worker, serta infrastruktur message broker tambahan.
+2. **Overhead Jaringan & Latensi Tambahan:** Pemanggilan antar-modul yang sebelumnya berupa *in-memory function call* (sangat cepat) kini berubah menjadi pemanggilan jaringan (HTTP REST / gRPC / Message Broker). Ini menambah sedikit latensi antar-proses dan mewajibkan tim menangani potensi error jaringan baru.
 
 ---
 
