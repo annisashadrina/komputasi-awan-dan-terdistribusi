@@ -4,11 +4,11 @@
 
 | Nama | NIM | Kontribusi |
 |---|---|---|
-| [Annisa Nur Shadrina] | [103072400134] | [semua modul berebut resource yang sama] |
-| [Fadia Nabila Shifa] | [103072400066] | [pitfall/bagian yang dikerjakan] |
-| [Aryo Abdillah Ainnurrofiq] | [103072400006] | [pitfall/bagian yang dikerjakan] |
+| [Annisa Nur Shadrina] | [103072400134] | [Semua modul berebut resource yang sama] |
+| [Fadia Nabila Shifa] | [103072400066] | [Network is always reliable, no need for retry] |
+| [Aryo Abdillah Ainnurrofiq] | [103072400006] | [Latency is zero / Pembayaran lambat yang membuat modul pesanan menunggu] |
 
-## Pitfall 1: Semua modul berebut resource yang sama (Monolithic Resource Contention / SPOF) — ditulis oleh Annisa N Shadrina
+## Pitfall 1: Semua modul berebut resource yang sama — ditulis oleh Annisa N Shadrina
 
 **Bukti di skenario:** Saat trafik naik, satu server yang menangani semua modul (pesanan, pembayaran, notifikasi kurir) kewalahan karena semuanya berjalan di satu proses monolitik yang sama.
 
@@ -40,9 +40,19 @@ tidak perlu langsung bikin microservices yang sangat kompleks, tapi bisa diterap
 
 ---
 
-## Pitfall 2: [nama pitfall] — ditulis oleh [nama]
+## Pitfall 2: [Latency is zero] — ditulis oleh [Aryo Abdillah Ainnurrofiq]
 
-(ulangi struktur di atas)
+**Bukti di skenario:** "Aplikasi jadi sangat lambat, beberapa permintaan timeout" Pada skenario FoodGo bahwa tidak ada timeout pada pemanggilan antar-service. Modul pembayaran dipanggil oleh modul pesanan lalu modul pembayaran menunggu respons tanpa batas waktu. Kondisi ini menurut saya menunjukkan bahwa sistem seolah menganggap komunikasi antar modul pembayaran akan selalu selesai dalam waktu yang cepat dan tidak mengalami keterlambatan   
+
+**Kenapa ini keliru:** Asumsi tersebut menurut saya keliru karena komunikasi antar modul dalam sistem terdistribusi tidak selalu berlangsung secara instan. Jadi, ketika modul pesanan mengirim permintaan ke modul pembayaran, ada proses komunikasi dan proses yang membutuhkan waktu. Di modul pembayaran juga mengalami peningkatan beban sehingga respons jadi sangat lambat.
+Menurut saya yang menarik untuk saya bahas adalah masalah utama FoodGo yang terjadi di modul pesanan tidak punya batas waktu ketika menunggu respons dari pembayaran. Akibatnya, ketika pembayaran mengalami keterlambatan, request dari modul pesanan tertahan. Jadi saat request bersamaan , semakin banyak proses yang harus menunggu respons pembayaran.
+
+**Dampak ke FoodGo:**  Dampaknya menurut saya tejadi ketika modul pembayaran merespons dengan lambat, modul pesanan akan terus menunggu karena tidak punya timeout. Jadi, jika ada waktu yang sama banyak pengguna melakukan pemesanan, jumlah request yang menunggu juga semakin banyak. Jika kondisi ini terus berlangsung, resource pada modul pesanan dapat semakin terbebani sehingga kemampuan server untuk menangani request baru ikut menurun. Akibatnya, pengguna lain dapat mengalami waktu respons yang semakin lama dan beberapa request dapat mengalami timeout. Kondisi tersebut sesuai dengan gejala yang dialami FoodGo ketika aplikasi menjadi sangat lambat saat trafik meningkat.
+Jadi alur sederhananya Payment lambat menyebabkan order menunggu karena tidak ada timeout hasilnya request banyak yang tertahan dan menyebabkan resource order terbebani lalu muncul request baru ikut melambat juga.
+
+**Solusi desain awal:** Solusi awal menurut saya adalah memberikan timeout pada komunikasi antara modul pesanan dan modul pembayaran. Modul pesanan tidak boleh menunggu respons pembayaran tanpa waktu yang di tentukan agar sistem dapat menentukan batas waktu tertentu untuk menunggu respons. Jika batas waktu sudah melebihi batas request tersebut tidak dijalankan lagi namun langsung masuk ke mekanisme penanganan kegagalan yang sudah ditentukan. Dengan adanya timeout bisa meringankan resource yang digunakkan sehingga modul pesanan bisa menerima request yang lain.
+
+**Trade-off:** Menurut saya, penggunaan timeout memang bisa mencegah modul pesanan menunggu terlalu lama, tetapi ada trade-off juga. Timeout tidak selalu berarti transaksi pembayaran benar-benar gagal. Ada kemungkinan pembayaran sebenarnya sudah diproses oleh modul pembayaran, tetapi responsnya terlambat sampai ke modul pesanan.Karena itu, saya memberikan timeout harus disertai mekanisme penanganan status transaksi yang jelas agar sistem tidak sembarangan mengulangi transaksi dan menyebabkan pembayaran diproses lebih dari satu kali. Artinya, timeout membantu mengatasi request yang menggantung, tetapi tetap membutuhkan desain status transaksi yang konsisten.
 
 ---
 
@@ -76,4 +86,12 @@ Pada kasus pembayaran juga perlu diperhatikan karena ada kemungkinan pembayaran 
 
 ## Kesimpulan Kelompok
 
-[Ringkasan: jika FoodGo memperbaiki ketiga pitfall ini, apa arsitektur yang disarankan secara garis besar? Kaitkan dengan Tugas 2.]
+Berdasarkan hasil diskusi dan analisis terhadap ketiga *pitfall* (berebutnya *resource* di satu proses, tidak adanya *timeout*, dan ketiadaan mekanisme *retry*), kami menyimpulkan bahwa kelumpuhan aplikasi FoodGo saat trafik tinggi sangat wajar terjadi. Kegagalan ini bersumber dari satu pola kesalahan yang sama: **Sistem FoodGo dibuat dengan asumsi bahwa lingkungan operasionalnya akan selalu ideal, cepat, dan tidak pernah terganggu.**
+
+Untuk mengatasi masalah ini dan sebagai landasan rancangan arsitektur kami untuk Tugas 2 nanti, kami menyarankan FoodGo untuk merombak arsitekturnya agar lebih tangguh (*resilient*) terhadap kegagalan jaringan maupun lonjakan trafik. Garis besar arsitektur yang kami usulkan adalah:
+
+1. **Pemisahan Service :** Modul Pesanan, Pembayaran, dan Notifikasi harus dipisah ke dalam lingkungan (seperti *container* Docker) yang berbeda. Dengan begitu, *resource pool* mereka terisolasi. Jika modul pembayaran butuh RAM tinggi, modul pesanan tidak akan ikut *crash*.
+2. **Penerapan Resiliency Patterns pada Jaringan:** Kami akan menerapkan batas waktu tunggu dan mekanisme mencoba ulang (*Retry* dengan jeda waktu yang diatur) pada pemanggilan antar-service, khususnya antara modul Pesanan dan Pembayaran. Ini krusial agar *request* tidak menggantung dan menjadi *bottleneck*.
+3. **Message Queue:** Untuk tugas-tugas di *background* seperti notifikasi kurir, arsitekturnya diarahkan menggunakan *Message Broker* (seperti RabbitMQ). Modul pesanan cukup melempar antrean tugas dan bisa langsung merespons *user* tanpa perlu menunggu kurir benar-benar mendapat notifikasi.
+
+Dengan arsitektur ini, kegagalan pada satu titik tidak akan menjalar secara berantai (*cascading failure*) dan menumbangkan seluruh aplikasi FoodGo.
