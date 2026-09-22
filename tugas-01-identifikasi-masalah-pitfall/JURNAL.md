@@ -38,4 +38,5 @@
 | tanggal | tool ai | prompt yang diberikan | ringkasan saran/ide ai | bagaimana diolah jadi tulisan/kode sendiri |
 |---|---|---|---|---|
 | 17 sep | chatgpt | contoh the network is reliable sehari hari | dikasih list contoh krs down aplikasi delay | gw (aryo) ambil ide yg web krs tp batal dipake |
-| 18 sep | chatgpt | kerangka poin poin analisis network reliable | dikasih urutan kerangka tulisan 1 sampe 5 |  (nisa) cmn copas urutan poinnya doang buat pedoman isinya ktik sndiri |
+| 18 sep | chatgpt | kerangka poin poin analisis network reliable | dikasih urutan kerangka tulisan 1 sampe 5 | (nisa) cmn copas urutan poinnya doang buat pedoman isinya ktik sndiri |
+| 22 sep | chatgpt | minta tolong analisis studi kasus foodgo tp jgn lgsg ksh jawaban cuma brainstorming | disaranin ide pitfall latency is zero | gw pake buat jelasin bagian aplikasi lambat & timeout gara2 gaada batas waktu nunggu modul pmbayaran |

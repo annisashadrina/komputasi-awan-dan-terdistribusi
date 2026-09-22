@@ -4,8 +4,8 @@
 
 | Nama | NIM | Kontribusi |
 |---|---|---|
-| [Annisa Nur Shadrina] | [103072400134] | [semua modul berebut resource yang sama] |
-| [Fadia Nabila Shifa] | [103072400066] | [pitfall/bagian yang dikerjakan] |
+| [Annisa Nur Shadrina] | [103072400134] | [Semua modul berebut resource yang sama] |
+| [Fadia Nabila Shifa] | [103072400066] | [Latency is zero /Pembayaran lambat yang membuat modul pesanan menunggu] |
 | [Aryo Abdillah Ainnurrofiq] | [103072400006] | [pitfall/bagian yang dikerjakan] |
 
 ## Pitfall 1: Semua modul berebut resource yang sama (Monolithic Resource Contention / SPOF) — ditulis oleh Annisa N Shadrina
@@ -40,9 +40,25 @@ tidak perlu langsung bikin microservices yang sangat kompleks, tapi bisa diterap
 
 ---
 
-## Pitfall 2: [nama pitfall] — ditulis oleh [nama]
+## Pitfall 2: [Latency is zero] — ditulis oleh [Aryo Abdillah Ainnurrofiq]
 
-(ulangi struktur di atas)
+**Bukti di skenario:** "Aplikasi jadi sangat lambat, beberapa permintaan timeout" Pada skenario FoodGo bahwa tidak ada timeout pada pemanggilan antar-service. Modul pembayaran dipanggil oleh modul pesanan lalu modul pembayaran menunggu respons tanpa batas waktu. Kondisi ini menurut saya menunjukkan bahwa sistem seolah menganggap komunikasi antar modul pembayaran akan selalu selesai dalam waktu yang cepat dan tidak mengalami keterlambatan   
+
+**Kenapa ini keliru:** Asumsi tersebut menurut saya keliru karena komunikasi antar modul dalam sistem terdistribusi tidak selalu berlangsung secara instan. Jadi, ketika modul pesanan mengirim permintaan ke modul pembayaran, ada proses komunikasi dan proses yang membutuhkan waktu. Di modul pembayaran juga mengalami peningkatan beban sehingga respons jadi sangat lambat.
+Menurut saya yang menarik untuk saya bahas adalah masalah utama FoodGo yang terjadi di modul pesanan tidak punya batas waktu ketika menunggu respons dari pembayaran. Akibatnya, ketika pembayaran mengalami keterlambatan, request dari modul pesanan tertahan. Jadi saat request bersamaan , semakin banyak proses yang harus menunggu respons pembayaran.
+
+**Dampak ke FoodGo:**  Dampaknya menurut saya tejadi ketika modul pembayaran merespons dengan lambat, modul pesanan akan terus menunggu karena tidak punya timeout. Jadi, jika ada waktu yang sama banyak pengguna melakukan pemesanan, jumlah request yang menunggu juga semakin banyak. Jika kondisi ini terus berlangsung, resource pada modul pesanan dapat semakin terbebani sehingga kemampuan server untuk menangani request baru ikut menurun. Akibatnya, pengguna lain dapat mengalami waktu respons yang semakin lama dan beberapa request dapat mengalami timeout. Kondisi tersebut sesuai dengan gejala yang dialami FoodGo ketika aplikasi menjadi sangat lambat saat trafik meningkat.
+Jadi alur sederhananya Payment lambat menyebabkan order menunggu karena tidak ada timeout hasilnya request banyak yang tertahan dan menyebabkan resource order terbebani lalu muncul request baru ikut melambat juga.
+
+**Solusi desain awal:** Solusi awal menurut saya adalah memberikan timeout pada komunikasi antara modul pesanan dan modul pembayaran. Modul pesanan tidak boleh menunggu respons pembayaran tanpa waktu yang di tentukan agar sistem dapat menentukan batas waktu tertentu untuk menunggu respons. Jika batas waktu sudah melebihi batas request tersebut tidak dijalankan lagi namun langsung masuk ke mekanisme penanganan kegagalan yang sudah ditentukan. Dengan adanya timeout bisa meringankan resource yang digunakkan sehingga modul pesanan bisa menerima request yang lain.
+
+**Trade-off:** Menurut saya, penggunaan timeout memang bisa mencegah modul pesanan menunggu terlalu lama, tetapi ada trade-off juga. Timeout tidak selalu berarti transaksi pembayaran benar-benar gagal. Ada kemungkinan pembayaran sebenarnya sudah diproses oleh modul pembayaran, tetapi responsnya terlambat sampai ke modul pesanan.Karena itu, saya memberikan timeout harus disertai mekanisme penanganan status transaksi yang jelas agar sistem tidak sembarangan mengulangi transaksi dan menyebabkan pembayaran diproses lebih dari satu kali. Artinya, timeout membantu mengatasi request yang menggantung, tetapi tetap membutuhkan desain status transaksi yang konsisten.
+
+
+
+
+
+
 
 ---
 
