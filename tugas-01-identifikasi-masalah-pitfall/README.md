@@ -46,9 +46,31 @@ tidak perlu langsung bikin microservices yang sangat kompleks, tapi bisa diterap
 
 ---
 
-## Pitfall 3: [nama pitfall] — ditulis oleh [nama]
+## Pitfall 3: [Network is always reliable, no need for retry] — ditulis oleh [Fadia Nabila Shifa]
 
-(ulangi struktur di atas)
+**Bukti di skenario:**
+Pada skenario disebutkan bahwa kode FoodGo menulis asumsi network is always reliable, no need for retry. Selain itu, pada pemanggilan antar service juga tidak terdapat timeout.
+
+**Kenapa ini keliru:**
+Menurut saya, asumsi ini keliru karena jaringan yang digunakan untuk komunikasi antar service tidak selalu berjalan dengan baik. Dalam kondisi tertentu, request bisa gagal atau tidak mendapatkan respons. Pada FoodGo, yang menjadi masalah adalah sistem menganggap network selalu reliable sehingga tidak menyiapkan mekanisme untuk mencoba kembali ketika terjadi kegagalan komunikasi.
+
+Ketika request dari satu service ke service lain gagal, seharusnya sistem mempunyai cara untuk menangani kondisi tersebut. Salah satunya dengan melakukan retry dengan batas percobaan tertentu. Kalau tidak ada mekanisme tersebut, request yang gagal bisa langsung berhenti dan proses yang membutuhkan komunikasi dengan service lain ikut terganggu.
+
+**Dampak ke FoodGo:**
+Dampaknya menurut saya terjadi ketika komunikasi antar-service mengalami gangguan. Request yang dikirim bisa gagal, tetapi FoodGo tidak mempunyai mekanisme untuk mencoba kembali request tersebut. Jika kondisi ini terjadi pada saat trafik sedang tinggi, beberapa request bisa mengalami masalah secara bersamaan.
+
+Hal tersebut dapat membuat proses pemesanan atau pembayaran terganggu dan pengguna bisa mengalami error atau timeout. Kondisi ini juga dapat memperburuk keadaan server ketika banyak request yang sedang diproses dalam waktu yang sama.
+
+**Solusi desain awal:**
+Solusi awal menurut saya adalah menambahkan mekanisme retry pada komunikasi antar service yang memang memungkinkan untuk dicoba kembali. Retry sebaiknya mempunyai batas jumlah percobaan dan jeda tertentu supaya request tidak terus menerus dikirim ketika service sedang bermasalah.
+
+Selain itu, komunikasi antar service juga perlu diberikan timeout sehingga sistem tidak menunggu respons tanpa batas waktu. Jika setelah beberapa kali percobaan request tetap gagal, sistem dapat menjalankan mekanisme penanganan error yang sudah ditentukan.
+
+**Trade-off:**
+Tetapi penggunaan retry juga mempunyai risiko. Kalau request selalu dicoba berkali-kali, jumlah request ke service yang sedang bermasalah justru bisa semakin banyak dan membuat bebannya bertambah.
+
+Pada kasus pembayaran juga perlu diperhatikan karena ada kemungkinan pembayaran sebenarnya sudah berhasil, tetapi responsnya tidak sampai ke modul pesanan. Jika sistem langsung melakukan retry tanpa pengecekan status transaksi, pembayaran bisa saja diproses lebih dari satu kali. Karena itu, mekanisme retry untuk pembayaran perlu dibuat dengan hati-hati agar tidak menimbulkan transaksi ganda.
+
 
 ---
 
