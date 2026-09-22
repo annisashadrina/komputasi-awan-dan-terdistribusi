@@ -21,15 +21,15 @@ Hal ini menyebabkan ketiga fungsi/modul berada dalam satu server dan satu proses
 
 
 **Dampak ke FoodGo:** 
-Mekanisme kegagalannya terjadi secara berantai (cascading failure) seperti ini:
-1. **Lonjakan Jam Makan Siang / Promo:** Ribuan pengguna melakukan checkout secara bersamaan. Modul pesanan mendadak memakan resource CPU tinggi dan membuka banyak koneksi ke database.
-2. **Resource Monolitik Ludes:** Karena thread pool dan database connection pool sifatnya global (dipakai bersama oleh modul pesanan, pembayaran, dan notifikasi kurir), modul pesanan mengambil hampir seluruh slot koneksi dan thread yang ada.
-3. **Modul Lain Tersandera (Bottleneck):** Ketika modul pembayaran dipanggil dan mengalami sedikit kelambatan (misalnya menunggu respon pihak ketiga), modul ini menahan sisa thread yang tersisa. Akhirnya, tidak ada lagi thread bebas di server untuk memproses request baru yang masuk.
-4. **RAM Membengkak & OOM Killer:** Antrean request yang terus menumpuk di memori membuat penggunaan RAM membengkak drastis hingga batas maksimum server.
-5. **Crash Total:** Server kehabisan resource dan memicu sistem operasi melakukan *Out of Memory (OOM) Killer* atau membuat proses aplikasi *freeze* total. Dampaknya, seluruh aplikasi FoodGo tumbang dan harus di-restart manual oleh tim devops. Fitur ringan seperti sekadar mengecek notifikasi kurir pun ikut mati total padahal tidak ada masalah pada modul tersebut.
+Mekanisme kegagalannya terjadi berantai seperti ini:
+1. banyak pengguna melakukan checkout secara bersamaan. Modul pesanan mendadak memakan resource CPU tinggi dan membuka banyak koneksi ke database
+2. Karena thread pool dan database connection pool sifatnya global (dipakai bersama oleh modul pesanan, pembayaran, dan notifikasi kurir), modul pesanan mengambil hampir seluruh slot koneksi dan thread yang ada
+3. Ketika modul pembayaran dipanggil dan mengalami sedikit kelambatan (misalnya menunggu respon pihak ketiga), modul ini menahan sisa thread yang tersisa. Akhirnya, tidak ada lagi thread bebas di server untuk memproses request baru yang masuk
+4. Antrean request yang terus menumpuk di memori membuat penggunaan RAM membengkak drastis hingga batas maksimum server
+5. Server kehabisan resource dan memicu sistem operasi melakukan *Out of Memory (OOM) Killer* atau membuat proses aplikasi *freeze* total. Dampaknya, seluruh aplikasi FoodGo tumbang dan harus di-restart manual oleh tim devops. Fitur ringan seperti sekadar mengecek notifikasi kurir pun ikut mati total padahal tidak ada masalah pada modul tersebut
 
 **Solusi desain awal:** 
-Untuk skala tim startup, solusinya tidak perlu langsung bikin microservices yang sangat kompleks, tapi bisa diterapkan langkah desain terpisah secara bertahap:
+tidak perlu langsung bikin microservices yang sangat kompleks, tapi bisa diterapkan langkah desain terpisah secara bertahap:
 1. **Pemecahan Proses (Process Decoupling):** Pisahkan eksekusi modul ke dalam proses yang berbeda. Minimal, bedakan proses antara API Utama (Pesanan), Worker Pembayaran, dan Worker Notifikasi.
 2. **Antrean Asinkron (Message Queue):** Ubah proses notifikasi kurir agar bersifat asinkron (*non-blocking*). Modul pesanan tidak perlu menunggu notifikasi terkirim; cukup kirim event/pesan ke message queue (seperti RabbitMQ atau Redis Queue) agar dikerjakan di background oleh worker notifikasi secara independen.
 3. **Isolasi Resource dengan Container (Docker):** Bungkus tiap service/worker ke dalam container Docker masing-masing dengan alokasi batas CPU dan RAM yang jelas. Jika worker notifikasi mengalami *memory leak* atau kebanjiran job, hanya container notifikasi yang restart, sedangkan server pesanan tetap bisa melayani transaksi pengguna.
