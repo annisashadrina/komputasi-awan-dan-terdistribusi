@@ -4,8 +4,8 @@
 
 | Nama | NIM | Kontribusi |
 |---|---|---|
-| [Annisa Nur Shadrina] | [103072400134] | [semua modul berebut resource yang sama] |
-| [Fadia Nabila Shifa] | [103072400066] | [pitfall/bagian yang dikerjakan] |
+| [Annisa Nur Shadrina] | [103072400134] | [Semua modul berebut resource yang sama] |
+| [Fadia Nabila Shifa] | [103072400066] | [Latency is zero /Pembayaran lambat yang membuat modul pesanan menunggu] |
 | [Aryo Abdillah Ainnurrofiq] | [103072400006] | [pitfall/bagian yang dikerjakan] |
 
 ## Pitfall 1: Semua modul berebut resource yang sama (Monolithic Resource Contention / SPOF) — ditulis oleh Annisa N Shadrina
@@ -40,9 +40,9 @@ Untuk skala tim startup, solusinya tidak perlu langsung bikin microservices yang
 
 ---
 
-## Pitfall 2: [nama pitfall] — ditulis oleh [nama]
+## Pitfall 2: [Latency is zero] — ditulis oleh [Aryo Abdillah Ainnurrofiq]
 
-(ulangi struktur di atas)
+**Bukti di skenario:** "Aplikasi jadi sangat lambat, beberapa permintaan timeout" Pada skenario FoodGo bahwa tidak ada timeout pada pemanggilan antar-service. Modul pembayaran dipanggil oleh modul pesanan lalu modul pembayaran menunggu respons tanpa batas waktu. Kondisi ini menurut saya menunjukkan bahwa sistem seolah menganggap komunikasi antar modul pembayaran akan selalu selesai dalam waktu yang cepat dan tidak mengalami keterlambatan   
 
 ---
 
