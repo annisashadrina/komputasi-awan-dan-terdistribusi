@@ -2,8 +2,13 @@
 
 ## [Tanggal 28 September 2026]
 - Opsi arsitektur yang dipertimbangkan: 
-- Kenapa akhirnya pilih [SOA/Pub-Sub]: ...
-- Revisi diagram (versi 1 → versi 2, apa yang berubah dan kenapa): ...
+1. SOA (Service-Oriented Architecture) , menurut ku SOA ini untuk memisahkan sistem FoodGo jadi beberapa layanan sesuai fungsinya seperti; Pesanan, Pembayaran, Katalog resto, dan Kurir.
+2. Publish-Subscribe, jadi ini menggunakan mekanisme event supaya layanan bisa bertukar informasi tanpa harus saling berkomunikasi secara langsung.
+3. Kombinasi SOA dan Pub-Sub yang aku sarankan untuk tugas ini ( kita akan memakai kombinasi ini). Menggunakan SOA untuk memisahkan layanan utama dan Publish-Subscribe untuk komunikasi berbasis event
+- Kenapa akhirnya pilih [SOA/Pub-Sub]: Pada rencana pertama aku memilih kombinasi dua SOA & Pub-Sub ini karena FoodGo membutuhkan pemisahan layanan sekaligus yang dimana komunikasi yang tidak selalu bergantung sama layanan lain. Aku akan bagi yang aku pikirkan disini jadi SOA ini berfungsi untuk memisahkan fungsi utama seperti pesanan, pembayaran, katalog resto. Nah untuk yang Pub-Sub digunakan untuk mengirimkan informasi berupa event ke layanan yang ngebutuhin. Jadi rancangan ini tujuanya agar ketergantungan antar layanan bisa dikurangi , walupun sistem jadi lebih kompleks karena merluin massage broker
+- Revisi diagram (versi 1 → versi 2, apa yang berubah dan kenapa): Diagram baru ingin dibuat dan masih dalam tahap perancangan awal.
+
+## [ Tanggal.. ]
 
 ## Log Penggunaan AI (Level 2)
 
