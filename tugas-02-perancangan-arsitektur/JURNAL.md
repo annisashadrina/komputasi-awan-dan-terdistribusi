@@ -16,4 +16,4 @@
 
 | Tanggal | Tool AI | Prompt yang diberikan | Ringkasan saran/ide AI | Bagaimana diolah jadi tulisan/kode sendiri |
 |28 sep |ChatGpt| Jelaskan apa itu SOA,Pub-Sub dan berikan fungsinya untuk brainstorm ku di tugas kedua  | ngasih penjelasan tentang SOA-Pub-Sub terus dia menjelaskan 2 komponen itu untuk tugas 02 | dengan brainstorm itu aku ( aryo ) berfikir untuk memakai 2 opsi arsitektur itu dan untuk bagian ku akan mengerjakan bagian service pesanan + service pembayaran|
-| ... | ... | ... | ... | ... |
+| 28 sep | Gemini | Jelaskan untuk alur end-to-end FoodGo dan berikan saya contoh agar bisa dipahami | dengan saran yang diberikan aku (aryo) membuat alur end-to-end sesuai contoh namun tidak langsung asal copas Ai | membuat diagram sequence dari hasil kesimpulan brainstorm ai tanpa lansung mencopas |
