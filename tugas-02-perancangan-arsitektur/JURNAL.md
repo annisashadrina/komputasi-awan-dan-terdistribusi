@@ -15,5 +15,5 @@
 > Wajib diisi sesuai kebijakan Level 2 di [`../RUBRIK-UMUM.md`](../RUBRIK-UMUM.md). Tulis "Tidak memakai AI" pada baris pertama jika memang tidak dipakai. Hanya untuk brainstorming ide/outline — bukan untuk kode/analisis/teks akhir.
 
 | Tanggal | Tool AI | Prompt yang diberikan | Ringkasan saran/ide AI | Bagaimana diolah jadi tulisan/kode sendiri |
-|---|---|---|---|---|
+|28 sep |ChatGpt| Jelaskan apa itu SOA,Pub-Sub dan berikan fungsinya untuk brainstorm ku di tugas kedua  | ngasih penjelasan tentang SOA-Pub-Sub terus dia menjelaskan 2 komponen itu untuk tugas 02 | dengan brainstorm itu aku ( aryo ) berfikir untuk memakai 2 opsi arsitektur itu dan untuk bagian ku akan mengerjakan bagian service pesanan + service pembayaran|
 | ... | ... | ... | ... | ... |
