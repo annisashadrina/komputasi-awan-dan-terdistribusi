@@ -77,12 +77,15 @@ flowchart LR
     P -->|10. Publish PaymentSuccess| B
 
     B -->|11. Subscribe OrderCreated| CR
-    B -->|12. Subscribe OrderCreated & PaymentSuccess| N
+    B -->|12. Subscribe OrderCreated dan PaymentSuccess| N
 
     CR -->|13. Publish CourierAssigned| B
     B -->|14. Subscribe CourierAssigned| N
 
     N -->|15. Mengirim status pesanan| C
+```
+
+
 
 3. Jelaskan alur satu skenario penuh secara end-to-end di diagram (misalnya: pelanggan buat pesanan → bayar → resto terima notifikasi → kurir ditugaskan) — tunjukkan komponen mana berkomunikasi dengan siapa, dan **jenis komunikasinya** (sinkron/asinkron, request-response/event).
 **Jawab** : Untuk bagian ini kita memakai satu skenario yang konkret : Pelanggan membuat pesanan, melakukan pembayaran, restoran menerima pesanan, lalu kurir mendapatkan tugas pengantaran. Alurnya perlu buat memperlihatkan urutan komunikasi, termasuk layanan yang nunggu respons dan layanan yang memproses event secara asinkron.
