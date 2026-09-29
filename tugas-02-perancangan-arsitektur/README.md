@@ -18,6 +18,83 @@ Melanjutkan Tugas 1: FoodGo butuh sistem yang **decoupled** agar tim kurir dan t
 
 2. Gambarkan minimal 4 komponen berikut dan interaksinya: modul Pesanan, modul Pembayaran, modul Kurir/Notifikasi, modul Katalog Resto (dan message broker/API gateway jika relevan)
 
+**Komponen yang Digunakan dalam Rancangan FoodGo**
+1. API Gateway
+2. Order Service / Service Pesanan
+3. Payment Service / Service Pembayaran
+4. Catalog Resto Service / Service Katalog Resto
+5. Courier Service / Service Kurir
+6. Notification Service / Service Notifikasi
+7. Message Broker
+8. Fungsi Masing-Masing Komponen
+
+**API Gateway**
+Menjadi pintu masuk permintaan dari pelanggan dan meneruskan permintaan tersebut ke service yang sesuai, seperti permintaan melihat menu dan membuat pesanan.
+
+**Order Service**
+Menangani proses pembuatan pesanan dan meneruskan permintaan pembayaran ke Payment Service. Setelah itu, Order Service mempublikasikan event OrderCreated melalui Message Broker.
+
+**Payment Service**
+Menangani proses pembayaran dan mengembalikan status pembayaran kepada Order Service. Setelah pembayaran berhasil, service ini mempublikasikan event PaymentSuccess melalui Message Broker.
+
+**Catalog Resto Service**
+Menyediakan informasi menu yang diminta oleh pelanggan melalui API Gateway, seperti daftar menu yang tersedia.
+
+**Courier Service**
+Menerima event OrderCreated melalui Message Broker untuk memproses penugasan kurir. Setelah kurir ditugaskan, service ini mempublikasikan event CourierAssigned.
+
+**Notification Service**
+Menerima event dari Message Broker, seperti OrderCreated, PaymentSuccess, dan CourierAssigned, kemudian mengirimkan informasi status pesanan kepada pelanggan.
+
+**Message Broker**
+Menjadi perantara komunikasi berbasis event antar-service menggunakan pola Publish-Subscribe. Service yang membutuhkan informasi dapat menerima event dengan melakukan subscribe tanpa harus dipanggil secara langsung oleh service lain.
+
+### Diagram Komponen dan Interaksi
+
+```mermaid
+flowchart LR
+    C[Pelanggan]
+    G[API Gateway]
+    CAT[Catalog Resto Service]
+    O[Order Service]
+    P[Payment Service]
+    B[Message Broker]
+    CR[Courier Service]
+    N[Notification Service]
+
+    C -->|1. Meminta daftar menu| G
+    G -->|2. Request data menu| CAT
+    CAT -->|3. Mengirim data menu| G
+    G -->|4. Menampilkan menu| C
+
+    C -->|5. Membuat pesanan| G
+    G -->|6. Mengirim data pesanan| O
+
+    O -->|7. Membuat tagihan pembayaran| P
+    P -->|8. Mengembalikan status pembayaran| O
+
+    O -->|9. Publish OrderCreated| B
+    P -->|10. Publish PaymentSuccess| B
+
+    B -->|11. Subscribe OrderCreated| CR
+    B -->|12. Subscribe OrderCreated & PaymentSuccess| N
+
+    CR -->|13. Publish CourierAssigned| B
+    B -->|14. Subscribe CourierAssigned| N
+
+    N -->|15. Mengirim status pesanan| C
+
+Keterangan Interaksi
+- Langkah 1-8 merupakan komunikasi sinkron, yaitu pelanggan meminta menu, membuat pesanan, dan melakukan pembayaran melalui API Gateway, Order Service, dan Payment Service.
+- Langkah 9-14 merupakan komunikasi asinkron menggunakan Message Broker dengan pola Publish-Subscribe.
+- Langkah 9, Order Service mempublikasikan OrderCreated.
+- langkah 10, Payment Service mempublikasikan PaymentSuccess.
+- Langkah 11, Courier Service melakukan subscribe terhadap event OrderCreated.
+- Langkah 12, Notification Service melakukan subscribe terhadap event OrderCreated dan PaymentSuccess.
+- Langkah 13, Courier Service mempublikasikan CourierAssigned.
+- Langkah 14, Notification Service menerima event CourierAssigned.
+- Langkah 15, Notification Service mengirimkan informasi status pesanan kepada pelanggan.
+
 3. Jelaskan alur satu skenario penuh secara end-to-end di diagram (misalnya: pelanggan buat pesanan → bayar → resto terima notifikasi → kurir ditugaskan) — tunjukkan komponen mana berkomunikasi dengan siapa, dan **jenis komunikasinya** (sinkron/asinkron, request-response/event).
 **Jawab** : Untuk bagian ini kita memakai satu skenario yang konkret : Pelanggan membuat pesanan, melakukan pembayaran, restoran menerima pesanan, lalu kurir mendapatkan tugas pengantaran. Alurnya perlu buat memperlihatkan urutan komunikasi, termasuk layanan yang nunggu respons dan layanan yang memproses event secara asinkron.
 A. Urutan Proses : Proses diawali saat pelanggan order lewat Service Pesanan, di mana sistem bakal validasi menu sama harga ke Service Katalog Resto dan meneruskan transaksi ke Service Pembayaran. Pas pembayaran sukses, Service Pesanan memperbarui status pesanan lalu mentrigger event OrderPaid ke Service Resto. Setelah restoran selesai masak dan kirim sinyal OrderReady, Service Kurir bakal dapet tugas buat jemput makanan, dan di saat yang sama Service Notifikasi bakal ngasih tahu semua pembaruan ini ke pelanggan.
