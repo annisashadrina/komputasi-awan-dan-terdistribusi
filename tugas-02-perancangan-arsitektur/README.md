@@ -85,7 +85,16 @@ flowchart LR
     N -->|15. Mengirim status pesanan| C
 ```
 
-
+**Keterangan Interaksi**
+- Langkah 1-8 merupakan komunikasi sinkron, yaitu pelanggan meminta menu, membuat pesanan, dan melakukan pembayaran melalui API Gateway, Order Service, dan Payment Service.
+- Langkah 9-14 merupakan komunikasi asinkron menggunakan Message Broker dengan pola Publish-Subscribe.
+- Langkah 9, Order Service mempublikasikan OrderCreated.
+- Langkah 10, Payment Service mempublikasikan PaymentSuccess.
+- Langkah 11, Courier Service melakukan subscribe terhadap event OrderCreated.
+- Langkah 12, Notification Service melakukan subscribe terhadap event OrderCreated dan PaymentSuccess.
+- Langkah 13, Courier Service mempublikasikan CourierAssigned.
+- Langkah 14, Notification Service menerima event CourierAssigned.
+- Langkah 15, Notification Service mengirimkan informasi status pesanan kepada pelanggan.
 
 3. Jelaskan alur satu skenario penuh secara end-to-end di diagram (misalnya: pelanggan buat pesanan → bayar → resto terima notifikasi → kurir ditugaskan) — tunjukkan komponen mana berkomunikasi dengan siapa, dan **jenis komunikasinya** (sinkron/asinkron, request-response/event).
 **Jawab** : Untuk bagian ini kita memakai satu skenario yang konkret : Pelanggan membuat pesanan, melakukan pembayaran, restoran menerima pesanan, lalu kurir mendapatkan tugas pengantaran. Alurnya perlu buat memperlihatkan urutan komunikasi, termasuk layanan yang nunggu respons dan layanan yang memproses event secara asinkron.
