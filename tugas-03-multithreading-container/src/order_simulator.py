@@ -17,7 +17,7 @@ NUM_WORKERS = 10        # jumlah thread pekerja
 processed_count = 0
 
 # TODO 1: Buat objek Lock di sini untuk melindungi `processed_count`.
-#lock = threading.Lock()
+lock = threading.Lock()
 
 
 def process_order(order_id: int) -> None:
