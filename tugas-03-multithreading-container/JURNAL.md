@@ -14,6 +14,5 @@
 
 > Wajib diisi sesuai kebijakan Level 2 di [`../RUBRIK-UMUM.md`](../RUBRIK-UMUM.md). Tulis "Tidak memakai AI" pada baris pertama jika memang tidak dipakai. Hanya untuk brainstorming ide/outline — bukan untuk kode/analisis/teks akhir.
 
-| Tanggal | Tool AI | Prompt yang diberikan | Ringkasan saran/ide AI | Bagaimana diolah jadi tulisan/kode sendiri |
-|---|---|---|---|---|
-| ... | ... | ... | ... | ... |
+| Tanggal | Tool AI | Prompt yang diberikan | Ringkasan saran/ide AI | Bagaimana diolah jadi tulisan/kode sendiri | | 6 Oktober 2026 | Gemini | Jelaskan untuk tugas 03 ini berikan aku pemahaman mengenai multithread atau lain sebagainya yang berhubungan dengan tugas kali ini | Menjelaskan multithread dan menjelaskan bagian logic code dengan detail tanpa memberikan copy code | Menulis code sesuai dengan pemahaman yang udah diberikan |
+
