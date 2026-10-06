@@ -1,17 +1,86 @@
 # Jurnal Proses — Tugas 3
 
 ## Percobaan tanpa Lock
-- Hasil `processed_count` yang didapat: engga konsisten soalnya pas awal coba nilai nya kurang dari 100 padahal nilai num_orders nya 100 yang ku dapetin tadi di awal tadi malahan nilai nya 0 karena terjadi crash yang numpuk karena variabel nya belum kedefinisi
-- Kenapa bisa meleset (jelaskan mekanisme race condition dengan kata sendiri): nilai jadi meleset karena operasi "processed_count +=1" bukan operasi komputasi yang tunggal, tapi ada 3 tahap baca : membaca nilai saat ini, tambahin nilai nya sama 1, terus nyimpen nilai baru tapi karena gada proteksi beberapa thread pekerja bisa membaca nilai, proses, dan menyimpan nilai nya hampir barengan, jadi perhitungan satu thread ketimpa sama thread lain yang mengeksekusi data memori yang sama yang bisa jumlah perhitungan hasil akhirnya ga sesuai dengan jumlah pesanan ( bukti di file bukti)
+
+- Hasil `processed_count` yang didapat tidak konsisten. Pada beberapa percobaan, hasil yang diperoleh kurang dari 100, padahal nilai `num_orders` adalah 100.
+- Perbedaan hasil terjadi karena beberapa thread dapat membaca nilai `processed_count` yang sama sebelum thread lain selesai memperbaruinya. Akibatnya, beberapa proses penambahan dapat saling menimpa.
+- Pada percobaan ini digunakan kode:
+
+      current = processed_count
+      time.sleep(0.01)
+      processed_count = current + 1
+
+- Kondisi tersebut menyebabkan terjadinya **race condition**, sehingga hasil akhir berbeda-beda pada setiap percobaan.
+
+### Hasil Percobaan
+
+| Percobaan | Hasil |
+|-----------|-------|
+| 1 | 33 dari 100 |
+| 2 | 37 dari 100 |
+| 3 | 38 dari 100 |
+| 4 | 34 dari 100 |
+| 5 | 37 dari 100 |
+
+Bukti percobaan disimpan pada:
+
+`bukti/race-condition-tanpa-lock.png`
+
+---
 
 ## Percobaan dengan Lock
-- Hasil `processed_count` setelah perbaikan: 100 ( sesuai sama jumlah pesanan "num_orders"). Jadi ketika aku nambahin "with lock" terus menghapus tag "lock" di todo 1 code berjalan lancar dan sesuai dengan hasil yang di inginkan jadi operasi penambahan nilai nya berjalan aman (thread safe) tanpa ada data yang menimpa
+
+- Setelah mengetahui adanya race condition, program diperbaiki dengan menggunakan `threading.Lock()`.
+- Lock digunakan untuk melindungi proses membaca dan memperbarui `processed_count`, sehingga hanya satu thread yang dapat menjalankan proses tersebut pada satu waktu.
+- Implementasi yang digunakan:
+
+      lock = threading.Lock()
+
+      with lock:
+          current = processed_count
+          time.sleep(0.01)
+          processed_count = current + 1
+
+### Hasil Percobaan
+
+Program dijalankan sebanyak lima kali setelah menggunakan Lock dan menghasilkan:
+
+- Percobaan 1: 100 dari 100
+- Percobaan 2: 100 dari 100
+- Percobaan 3: 100 dari 100
+- Percobaan 4: 100 dari 100
+- Percobaan 5: 100 dari 100
+
+Hasil tersebut sesuai dengan jumlah pesanan yang seharusnya, yaitu 100.
+
+Bukti percobaan disimpan pada:
+
+`bukti/race-condition-with-lock.png`
+
+---
+
+## Perbandingan Hasil
+
+| Percobaan | Tanpa Lock | Dengan Lock |
+|-----------|------------|-------------|
+| 1 | 33 | 100 |
+| 2 | 37 | 100 |
+| 3 | 38 | 100 |
+| 4 | 34 | 100 |
+| 5 | 37 | 100 |
+
+Dari hasil percobaan dapat dilihat bahwa tanpa Lock terjadi race condition sehingga hasil tidak konsisten. Setelah menggunakan Lock, hasil menjadi konsisten dan sesuai dengan jumlah pesanan yang diproses.
+
+---
 
 ## Kendala Docker
-- Error yang ditemui saat `docker build`/`docker run` dan cara memperbaikinya:
-  1. **Perintah `docker` tidak dikenali di terminal:** Saat Docker Desktop baru selesai diinstall, terminal PowerShell lama belum mendeteksi perintah `docker` (`The term 'docker' is not recognized`). Hal ini terjadi karena variabel `$env:Path` pada sesi terminal lama belum diperbarui. Solusinya: membuka sesi tab terminal baru atau mereload environment path secara manual.
-  2. **Error `docker-credential-desktop: executable file not found in %PATH%`:** Terjadi saat proses build membaca kredensial helper Docker Desktop. Hal ini teratasi setelah path `DockerDesktop\resources\bin` termuat secara lengkap ke dalam environment path sistem.
-  3. **Hasil `docker run`:** Setelah image `foodgo-order-sim` berhasil di-build, kontainer dijalankan dengan `docker run --rm foodgo-order-sim` dan sukses menghasilkan `Total pesanan diproses: 100 (seharusnya 100)` tanpa error.
+
+- Error yang ditemui saat menggunakan Docker adalah Docker Desktop pada awalnya tidak dapat berjalan dengan baik karena konfigurasi WSL belum aktif atau belum terdeteksi dengan benar.
+- Setelah konfigurasi WSL diperbaiki dan Docker Desktop dapat berjalan, proses build dan menjalankan program dapat dilakukan.
+- Selain itu, terdapat error `credential-desktop: executable file not found` ketika proses build membaca credential helper Docker. Error tersebut diperbaiki dengan menyesuaikan konfigurasi Docker sehingga proses build dapat berjalan.
+- Setelah perbaikan dilakukan, program berhasil dijalankan menggunakan Docker dan menghasilkan nilai `processed_count` yang sesuai, yaitu 100.
+
+---
 
 ## Log Penggunaan AI (Level 2)
 
