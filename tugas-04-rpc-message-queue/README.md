@@ -2,6 +2,14 @@
 
 **Materi terkait:** Remote Procedure Call (RPC), Message-Oriented Middleware (MOM)/Message Queue.
 
+**Kelompok:** [Nama Kelompok]
+
+| Nama | NIM | Kontribusi |
+|---|---|---|
+| Annisa Nur Shadrina | 103072400134 |...|
+| Fadia Nabila Shifa | 103072400066 |...|
+| Aryo Abdillah Ainnurrofiq | 103072400006 |Mengerjakan jalur B (Massage Queue menggunakkan RabbitMQ)|
+
 ## Studi Kasus
 
 Modul **Pembayaran** dan modul **Pesanan** FoodGo harus berkomunikasi secara reliabel. Untuk beberapa operasi (mis. cek status saldo) respons dibutuhkan **seketika** (sinkron). Untuk operasi lain (mis. kirim notifikasi "pembayaran berhasil" ke modul kurir) sistem **tidak boleh menunggu** — modul pembayaran harus tetap responsif walau modul kurir sedang sibuk/down (asinkron).
