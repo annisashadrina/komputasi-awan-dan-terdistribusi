@@ -1,5 +1,5 @@
 # TODO 1: Pilih base image Python resmi yang ringan (cari tag "slim" di Docker Hub).
-FROM python:__ISI_VERSI__-slim
+FROM python:3.14-slim
 
 WORKDIR /app
 
