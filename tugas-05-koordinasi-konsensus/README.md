@@ -6,6 +6,22 @@
 
 Terjadi konflik urutan waktu pada pesanan FoodGo (dua server mencatat urutan pesanan berbeda karena jam tidak sinkron), dan sistem membutuhkan satu **"Node Leader"** untuk mengelola antrean pesanan pusat agar tidak terjadi konflik pemrosesan ganda.
 
+| Nama | NIM | Kontribusi |
+|---|---|---|
+| Annisa Nur Shadrina | 103072400134 |...|
+| Fadia Nabila Shifa | 103072400066 |...|
+| Aryo Abdillah Ainnurrofiq | 103072400006 |Mengimplementasikan logika bully action (code) lengkap dengan bukti dan menguji skenario 1 dan skenario 2|
+
+## A. kenapa FoodGo membutuhkan leader ?
+Leader sebagai titik koordinasi buat nentuin siapa yang kelola antrian pusat, misalkan server berbeda maka urutan pesanan berbeda terus ngecek apa masih ada potensi pemrosesan ganda , nah disini peran leader sebagai koordinasi
+## B. Kenapa Bully ?
+Bully cocok karena dia sederhana, node nya punya ID unik, mudah di simulasiin karena bisa ngejalanin 5 proses lokal, kalau leader mati , node yang id tertinggi masih hidup ngambil alih karena leader dipilih berdasarkan ID 
+## Kenapa selalu ID tertinggi ?
+karena node X ( value node) kirim election , semua node dengan id lebih besar dari X ( value node) kalau ada yang lebih tinggi maka kirim massage "OK" nah proses nya bakal terus berjalan sampai node tertinggi yang masih hidup
+
+
+
+
 ## Tugas Kelompok
 
 Implementasikan simulasi **Bully Algorithm** untuk memilih leader di antara **5 node virtual** yang berjalan sebagai 5 proses Python terpisah di laptop yang sama (tiap node = satu proses di port berbeda, komunikasi lewat TCP socket di `localhost`).
