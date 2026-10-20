@@ -6,12 +6,6 @@
 
 Terjadi konflik urutan waktu pada pesanan FoodGo (dua server mencatat urutan pesanan berbeda karena jam tidak sinkron), dan sistem membutuhkan satu **"Node Leader"** untuk mengelola antrean pesanan pusat agar tidak terjadi konflik pemrosesan ganda.
 
-| Nama | NIM | Kontribusi |
-|---|---|---|
-| Annisa Nur Shadrina | 103072400134 |...|
-| Fadia Nabila Shifa | 103072400066 |...|
-| Aryo Abdillah Ainnurrofiq | 103072400006 |Mengimplementasikan logika bully action (code) lengkap dengan bukti dan menguji skenario 1 dan skenario 2|
-
 ### A. Kenapa FoodGo Membutuhkan Leader?
 
 FoodGo membutuhkan leader untuk mengoordinasikan beberapa server yang bekerja secara bersamaan agar proses pemesanan dapat berjalan dengan teratur. Tanpa adanya leader, setiap server dapat mengambil keputusan sendiri sehingga berpotensi menimbulkan perbedaan urutan pemrosesan pesanan, konflik data, atau pemrosesan transaksi yang berulang.
