@@ -12,12 +12,33 @@ Terjadi konflik urutan waktu pada pesanan FoodGo (dua server mencatat urutan pes
 | Fadia Nabila Shifa | 103072400066 |...|
 | Aryo Abdillah Ainnurrofiq | 103072400006 |Mengimplementasikan logika bully action (code) lengkap dengan bukti dan menguji skenario 1 dan skenario 2|
 
-## A. kenapa FoodGo membutuhkan leader ?
-Leader sebagai titik koordinasi buat nentuin siapa yang kelola antrian pusat, misalkan server berbeda maka urutan pesanan berbeda terus ngecek apa masih ada potensi pemrosesan ganda , nah disini peran leader sebagai koordinasi
-## B. Kenapa Bully ?
-Bully cocok karena dia sederhana, node nya punya ID unik, mudah di simulasiin karena bisa ngejalanin 5 proses lokal, kalau leader mati , node yang id tertinggi masih hidup ngambil alih karena leader dipilih berdasarkan ID 
-## Kenapa selalu ID tertinggi ?
-karena node X ( value node) kirim election , semua node dengan id lebih besar dari X ( value node) kalau ada yang lebih tinggi maka kirim massage "OK" nah proses nya bakal terus berjalan sampai node tertinggi yang masih hidup
+### A. Kenapa FoodGo Membutuhkan Leader?
+
+FoodGo membutuhkan leader untuk mengoordinasikan beberapa server yang bekerja secara bersamaan agar proses pemesanan dapat berjalan dengan teratur. Tanpa adanya leader, setiap server dapat mengambil keputusan sendiri sehingga berpotensi menimbulkan perbedaan urutan pemrosesan pesanan, konflik data, atau pemrosesan transaksi yang berulang.
+
+Leader berperan sebagai koordinator dalam pengambilan keputusan yang membutuhkan koordinasi antarserver. Jika leader mengalami kegagalan, Bully Algorithm memungkinkan node lain melakukan pemilihan ulang untuk menentukan leader pengganti berdasarkan ID tertinggi dari node yang masih aktif.
+
+Dengan adanya mekanisme ini, koordinasi FoodGo dapat tetap berjalan ketika leader mengalami kegagalan. Namun, pemilihan leader saja tidak menjamin seluruh transaksi konsisten atau mencegah pesanan diproses dua kali. Oleh karena itu, FoodGo tetap membutuhkan mekanisme tambahan untuk menjaga konsistensi data dan mencegah duplikasi transaksi.
+
+## B. Kenapa Bully?
+
+Bully Algorithm dipilih karena mekanisme pemilihan leader-nya relatif sederhana dan mudah diterapkan pada simulasi sistem terdistribusi yang terdiri dari lima node. Setiap node memiliki ID yang berbeda, sehingga pemilihan leader dapat dilakukan berdasarkan ID tertinggi dari node yang masih aktif.
+
+Ketika sebuah node mendeteksi bahwa leader tidak merespons, node tersebut dapat memulai proses election dengan mengirim pesan `ELECTION` kepada node yang memiliki ID lebih tinggi. Node yang masih aktif akan membalas dengan pesan `OK` dan melanjutkan proses election. Jika tidak ada node dengan ID lebih tinggi yang merespons, node tersebut dapat menyatakan dirinya sebagai leader dan mengumumkannya melalui pesan `COORDINATOR`.
+
+Pada sistem FoodGo, mekanisme ini membantu menentukan koordinator baru ketika leader mengalami kegagalan. Selain itu, Bully Algorithm cocok digunakan untuk memahami dasar pemilihan leader sebelum mempelajari algoritma konsensus yang lebih kompleks, seperti Raft.
+
+Namun, Bully Algorithm berfokus pada pemilihan leader dan tidak secara langsung menjamin konsistensi seluruh transaksi FoodGo. Oleh karena itu, diperlukan mekanisme tambahan untuk menjaga konsistensi data dan mencegah pemrosesan pesanan secara berulang.
+
+## C. Kenapa Selalu ID Tertinggi?
+
+Dalam Bully Algorithm, node dengan ID tertinggi yang masih aktif dipilih menjadi leader karena algoritma ini menggunakan ID sebagai dasar prioritas pemilihan. Aturan tersebut membuat setiap node memiliki urutan prioritas yang jelas sehingga proses pemilihan leader dapat dilakukan secara terstruktur.
+
+Ketika node dengan ID lebih rendah memulai election, node tersebut akan mengirim pesan `ELECTION` kepada node dengan ID lebih tinggi. Jika ada node ber-ID lebih tinggi yang masih aktif, node tersebut akan membalas dengan pesan `OK` dan memulai election sendiri. Proses ini berlanjut hingga node aktif dengan ID tertinggi tidak menerima balasan dari node yang lebih tinggi, sehingga dapat menyatakan dirinya sebagai leader dan mengirim pesan `COORDINATOR` kepada node lainnya.
+
+Pada simulasi FoodGo, Node 5 menjadi leader ketika seluruh node aktif karena memiliki ID tertinggi. Jika Node 5 mengalami kegagalan, Node 4 berpotensi menjadi leader baru karena memiliki ID tertinggi di antara node yang masih aktif.
+
+Pemilihan berdasarkan ID tertinggi bukan berarti node tersebut pasti memiliki performa terbaik. Aturan ini merupakan mekanisme prioritas yang digunakan Bully Algorithm agar pemilihan leader memiliki hasil yang jelas dan konsisten selama kondisi komunikasi serta asumsi algoritma terpenuhi.
 
 
 
