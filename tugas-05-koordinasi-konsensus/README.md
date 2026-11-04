@@ -92,3 +92,9 @@ tugas-05-koordinasi-konsensus/
 Kebijakan **Level 2 (AI Assisted Idea Generation & Structuring)** berlaku — lihat [`../RUBRIK-UMUM.md`](../RUBRIK-UMUM.md). Boleh bertanya ke AI tentang gambaran umum algoritma election; **tidak boleh** meminta AI menuliskan isi `# TODO` di `src/node.py` (logika `on_message`, `start_election`, `declare_leader`, `monitor_leader`). Catat pemakaian AI di "Log Penggunaan AI" pada `JURNAL.md`.
 
 - `README.md` wajib menjelaskan kenapa Bully Algorithm selalu memilih node ber-ID tertinggi yang masih hidup, dan apa kelemahannya dibanding algoritma lain (mis. jumlah pesan yang dikirim saat election, single point of failure sebelum leader baru terpilih) — bukan sekadar definisi generik.
+
+## Hasil pengujian dan perbandingan
+
+Pada uji lima proses, node 5 menjadi leader. Setelah proses node 5 dihentikan, node 4 menyatakan diri sebagai leader dan node 1–3 mencatat node 4. Log setiap proses tersedia di `bukti/log_node1.txt` sampai `bukti/log_node5.txt`; waktu deteksi tepat belum diukur karena log tidak memiliki timestamp.
+
+Bully dapat memerlukan banyak pesan election ketika beberapa node memulai pemilihan bersamaan, dan layanan koordinasi dapat terganggu sampai leader baru terpilih. Raft juga memilih leader, tetapi menambahkan replikasi log dan aturan mayoritas untuk menjaga konsistensi keputusan; konsekuensinya implementasi lebih kompleks dan memerlukan mayoritas node yang dapat berkomunikasi. Penanganan urutan dan duplikasi pesanan tetap membutuhkan mekanisme penyimpanan dan idempotensi yang sesuai.

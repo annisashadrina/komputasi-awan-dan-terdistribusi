@@ -78,22 +78,22 @@ class Node:
             f"dari Node {sender_id}"
             )
 
-        # Jika ID kita lebih besar, kita masih berhak mengikuti election dan memberitahu sender bahwa kita hidup.
-        if self.node_id > sender_id:
-            sender_port = self.peers.get(sender_id)
+            # Jika ID kita lebih besar, kita masih berhak mengikuti election dan memberitahu sender bahwa kita hidup.
+            if self.node_id > sender_id:
+                sender_port = self.peers.get(sender_id)
 
-            if sender_port is not None:
-                self.send_message(sender_port, "OK")
-                print(
-                    f"[Node {self.node_id}] Mengirim OK "
-                    f"ke Node {sender_id}"
-                )
+                if sender_port is not None:
+                    self.send_message(sender_port, "OK")
+                    print(
+                        f"[Node {self.node_id}] Mengirim OK "
+                        f"ke Node {sender_id}"
+                    )
 
-            # Mulai election sendiri karena ID kita lebih tinggi.
-            threading.Thread(
-                target=self.start_election,
-                daemon=True
-            ).start()
+                # Mulai election sendiri karena ID kita lebih tinggi.
+                threading.Thread(
+                    target=self.start_election,
+                    daemon=True
+                ).start()
 
         elif msg_type == "OK":
             print(
