@@ -42,7 +42,13 @@ class ReplicationSystem:
         # TODO 1: replikasi ke Bandung TERTUNDA (simulasikan dengan
         # threading.Timer(REPLICATION_DELAY, ...) yang memanggil
         # self.bandung.write(user_id, saldo_baru, version) setelah delay.
-        print(f"[TODO] Replikasi ke Bandung akan tertunda {REPLICATION_DELAY} detik")
+        threading.Timer(
+            REPLICATION_DELAY,
+            self.bandung.write,
+            args=(user_id, saldo_baru, version)
+        ).start()
+
+        print(f"[INFO] Replikasi ke Bandung dijadwalkan dalam {REPLICATION_DELAY} detik")
 
     def baca_saldo_naif(self, user_id: str, server: str) -> float:
         """Baca saldo TANPA mekanisme Read-Your-Writes - bisa saja stale."""
@@ -55,7 +61,20 @@ class ReplicationSystem:
         melihat versi lebih baru sebelumnya), tunggu/redirect ke replika yang
         sudah punya versi tersebut (di sini cukup simulasikan dengan polling
         sampai versi replika >= versi_minimal, atau redirect ke Jakarta)."""
-        pass
+        replica = self.jakarta if server == "Jakarta" else self.bandung
+
+        versi_server = replica.last_write_version.get(user_id, 0)
+
+        if versi_server < versi_minimal:
+            print(
+                f"[Read-Your-Writes] Versi {replica.name} masih "
+                f"{versi_server}, dibutuhkan versi {versi_minimal}."
+            )
+            print("[Read-Your-Writes] Mengalihkan pembacaan ke Jakarta.")
+
+            replica = self.jakarta
+
+        return replica.read(user_id)
 
 
 def main():
@@ -75,6 +94,15 @@ def main():
     versi_terakhir = system.version_counter
     # TODO 3: panggil baca_saldo_read_your_writes dan tunjukkan hasilnya SELALU benar
     # walau dipanggil segera setelah top_up (< REPLICATION_DELAY detik).
+    print(
+        "Baca saldo dari Bandung (Read-Your-Writes):",
+        system.baca_saldo_read_your_writes(
+            user_id,
+            "Bandung",
+            versi_terakhir
+        )
+    )
+    print("-> Saldo yang dibaca sudah sesuai dengan versi terbaru.")
 
 
 if __name__ == "__main__":
