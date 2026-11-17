@@ -59,6 +59,8 @@ Kami memilih sequential consistency sebagai kebutuhan untuk pengurutan operasi s
 
 Setelah top-up berhasil di Jakarta, server memberikan versi hasil penulisan kepada pelanggan. Saat pelanggan membaca saldo di Bandung, aplikasi ikut mengirim versi terakhir tersebut. Bandung membandingkan versinya dengan versi yang dibawa pelanggan. Jika Bandung sudah memiliki versi yang cukup baru, saldo dibaca dari Bandung. Jika belum, permintaan diarahkan ke Jakarta atau menunggu sampai replikasi selesai. Cara ini memerlukan penyimpanan versi di sisi pelanggan dan penanganan ketika Jakarta tidak tersedia. Jaminannya berlaku untuk penulisan pelanggan itu sendiri; mekanisme ini saja belum menyelesaikan semua konflik transaksi.
 
+Mekanisme Read-Your-Writes digunakan untuk menjaga agar pelanggan dapat melihat hasil penulisannya sendiri. Namun, mekanisme ini tidak menggantikan Sequential Consistency karena jaminannya hanya berlaku terhadap penulisan yang dilakukan oleh pelanggan tersebut.
+
 ### Alur tanpa read-your-writes
 
 ```mermaid
@@ -103,10 +105,12 @@ sequenceDiagram
 
 ### Skenario tambahan
 
-Jumlah ulasan atau like pada restoran dapat menggunakan eventual consistency. Bila jumlah like di dua wilayah berbeda selama beberapa detik, pelanggan masih dapat menggunakan aplikasi dan tidak ada saldo yang berkurang. Setelah replikasi selesai, kedua wilayah akan menampilkan data yang sama. Sistem tetap perlu menangani pengiriman like berulang agar satu tindakan tidak terhitung lebih dari sekali.
+Pada aplikasi FoodGo, informasi jumlah pengunjung yang sedang melihat halaman restoran dapat menggunakan Eventual Consistency. Jika jumlah pengunjung di server Jakarta dan Bandung berbeda untuk sementara waktu, hal tersebut tidak terlalu memengaruhi proses pemesanan makanan. Setelah proses replikasi selesai, jumlah pengunjung akan diperbarui sehingga kedua server memiliki data yang sama. Namun, sistem tetap perlu mencegah satu pengunjung terhitung lebih dari satu kali.
 
 ## Hasil simulasi
 
-Jalankan `python src/replica_simulation.py`. Pada skenario naif, pembacaan langsung di Bandung menghasilkan Rp0 setelah top-up Rp50.000 di Jakarta karena replikasi belum selesai. Pada skenario berikutnya, top-up Rp20.000 membuat saldo Jakarta menjadi Rp70.000. Bandung masih memiliki versi lama sehingga pembacaan dialihkan ke Jakarta dan menghasilkan Rp70.000. Bukti hasil tersedia di `bukti/hasil simulasi.png`.
+Jalankan `python src/replica_simulation.py`. Pada skenario naif, pembacaan saldo langsung di Bandung menghasilkan Rp0 setelah top-up Rp50.000 di Jakarta karena proses replikasi belum selesai. Pada skenario berikutnya, top-up Rp20.000 membuat saldo di Jakarta menjadi Rp70.000. Karena Bandung masih memiliki data versi lama, pembacaan dialihkan ke Jakarta sehingga saldo yang diperoleh tetap Rp70.000.
 
-Simulasi ini menunjukkan read-your-writes pada alur sederhana tersebut; simulasi belum membuktikan sequential consistency atau keamanan transaksi bersamaan.
+Bukti hasil tersedia di `bukti/hasil simulasi.png`.
+
+Simulasi ini menunjukkan penerapan Read-Your-Writes pada alur sederhana, tetapi belum membuktikan Sequential Consistency maupun keamanan transaksi yang dilakukan secara bersamaan.
