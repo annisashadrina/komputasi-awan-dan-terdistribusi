@@ -1,13 +1,12 @@
 # Jurnal Proses — Tugas 9
 
 ## Diskusi deployment model
-- Opsi yang dipertimbangkan dan kenapa akhirnya memilih salah satu:
 Kelompok kami awalnya mempertimbangkan empat deployment model, yaitu Public Cloud, Private Cloud, Hybrid Cloud, dan Community Cloud. Pertama Public Cloud memiliki keunggulan dalam skalabilitas, tetapi kendali langsung terhadap infrastrukturnya lebih terbatas. Hybrid Cloud menggabungkan fleksibilitas Public Cloud dan kontrol Private Cloud, tetapi membutuhkan pengelolaan serta integrasi yang lebih kompleks. Sementara itu, Community Cloud memungkinkan penggunaan infrastruktur bersama oleh organisasi dengan kepentingan serupa.
 
 Setelah mempertimbangkan kebutuhan sistem, kelompok kami memilih Private Cloud karena Sistem Data Kependudukan menyimpan data sensitif seperti NIK, alamat, dan biometrik penduduk. Private Cloud memungkinkan pemerintah memiliki kendali lebih besar terhadap infrastruktur, penyimpanan, dan kebijakan keamanan data. Meskipun membutuhkan perencanaan kapasitas yang baik untuk menghadapi lonjakan akses, model ini dinilai sesuai dengan kebutuhan kerahasiaan dan pengendalian data kependudukan.
 
 ## Diskusi service model per komponen
-- Kelompok kami mempertimbangkan tiga service model, yaitu IaaS, PaaS, dan SaaS. IaaS memberikan kendali lebih besar terhadap infrastruktur, PaaS memudahkan pengembangan dan pengelolaan aplikasi, sedangkan SaaS menyediakan aplikasi yang siap digunakan.
+Kelompok kami mempertimbangkan tiga service model, yaitu IaaS, PaaS, dan SaaS. IaaS memberikan kendali lebih besar terhadap infrastruktur, PaaS memudahkan pengembangan dan pengelolaan aplikasi, sedangkan SaaS menyediakan aplikasi yang siap digunakan.
 
 Pada akhirnya kelompok kami memilih kombinasi IaaS dan SaaS. IaaS digunakan untuk database inti karena membutuhkan kendali infrastruktur dan keamanan yang lebih besar, sedangkan SaaS digunakan untuk portal akses instansi agar lebih mudah digunakan oleh berbagai pengguna.
 
