@@ -18,6 +18,25 @@ Pemerintah ingin membangun **Sistem Data Kependudukan** (nama, NIK, alamat, data
 3. Jelaskan **minimal 2 risiko spesifik** dari pilihan kalian dan mitigasinya (mis. jika Hybrid Cloud dipilih: risiko sinkronisasi data antara private & public segment).
 4. Bandingkan singkat dengan **satu alternatif yang kalian tolak** — kenapa alternatif itu kurang tepat (mis. kenapa Public Cloud murni ditolak, atau kenapa Private Cloud murni dianggap kurang skalabel).
 
+## Jawaban Tugas Kelompok
+1. ### Rekomendasi Deployment Model
+Deployment Model yang kami pilih adalah Private Cloud karena Sistem Data Kependudukan mengelola data pribadi yang sangat sensitif, seperti NIK, alamat, dan biometrik penduduk. Private Cloud memungkinkan infrastruktur dikhususkan untuk pemerintah sehingga pengelolaan data, server, jaringan, dan kebijakan keamanan berada dalam kendali pemerintah.
+
+Pemilihan ini juga sesuai dengan lima karakteristik NIST. On-demand self-service memungkinkan instansi menggunakan sumber daya sesuai kebutuhan, sedangkan broad network access mendukung akses dari berbagai instansi melalui jaringan yang aman. Resource pooling memungkinkan penggunaan sumber daya secara bersama dan terpusat. Rapid elasticity mendukung penyesuaian kapasitas ketika terjadi lonjakan akses, sementara measured service memungkinkan penggunaan sumber daya dipantau dan diukur.
+
+Dengan demikian, Private Cloud dapat memberikan kendali lebih besar terhadap keamanan data sekaligus mendukung kebutuhan akses dan skalabilitas sistem. Namun, pemerintah tetap perlu menyiapkan kapasitas infrastruktur yang memadai agar layanan tidak mengalami downtime saat terjadi lonjakan akses.
+
+2. ### Rekomendasi Service Model
+Service Model yang direkomendasikan adalah kombinasi IaaS dan SaaS. IaaS digunakan untuk database inti kependudukan karena pemerintah membutuhkan kendali terhadap server, penyimpanan, dan konfigurasi infrastruktur yang menyimpan data sensitif penduduk. Sementara itu, SaaS digunakan untuk portal akses instansi agar pengguna dapat memanfaatkan aplikasi yang telah disediakan tanpa harus mengelola infrastruktur di belakangnya.
+
+Kombinasi kedua model ini memungkinkan pemerintah mempertahankan kendali terhadap infrastruktur penyimpanan data sekaligus menyediakan layanan yang mudah digunakan oleh berbagai instansi.
+
+
+
+
+
+
+
 ## Struktur Submission
 
 ```
