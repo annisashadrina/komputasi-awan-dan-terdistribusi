@@ -65,7 +65,7 @@ Kontribusi dicatat berdasarkan pekerjaan yang telah dilakukan; data NIM perlu di
 |---|---|---|
 | Annisa Nur Shadrina | 103072400134 |  Penyusunan analisis risiko, perbandingan alternatif, dan skenario tandingan  |
 | Alexandria Febrianti  | 103072400066 | Belum dikonfirmasi |
-| Wahyu | 103072400006 | Menyusun rekomendasi deployment dan service model serta mencatat proses diskusi di jurnal. |
+| Wahyu Puji Riski Purwanto | 103072400050 | Menyusun rekomendasi deployment dan service model serta mencatat proses diskusi di jurnal. |
 
 ## Struktur Submission
 
