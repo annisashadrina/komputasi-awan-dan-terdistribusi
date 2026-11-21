@@ -37,6 +37,36 @@ Kombinasi kedua model ini memungkinkan pemerintah mempertahankan kendali terhada
 
 
 
+### 3. Risiko dan mitigasi
+
+- **Kapasitas tidak cukup saat lonjakan akses.** Permintaan verifikasi NIK dari banyak instansi saat pendaftaran sekolah atau pemilu dapat memenuhi kapasitas private cloud sehingga layanan menjadi lambat atau tidak tersedia. Pemerintah perlu memperkirakan kebutuhan berdasarkan pola akses, melakukan uji beban, menyiapkan kapasitas cadangan, serta memantau penggunaan agar sumber daya bisa ditambah sebelum mencapai batas. Elastisitas tetap dibatasi kapasitas fisik yang tersedia.
+- **Akses data oleh pihak yang tidak berwenang.** Akun instansi yang dicuri atau memiliki hak akses berlebihan dapat digunakan untuk melihat data penduduk, termasuk biometrik. Hak akses perlu dibatasi sesuai tugas dan kebutuhan masing-masing instansi, disertai autentikasi multifaktor, enkripsi data, serta pencatatan dan pemeriksaan akses. Misalnya, layanan verifikasi bank cukup mengembalikan hasil cocok atau tidak cocok sesuai kewenangannya, bukan seluruh data biometrik.
+- **Gangguan pusat data.** Kerusakan perangkat atau bencana pada pusat data dapat menghentikan pelayanan dan mengancam ketersediaan data. Mitigasinya adalah menyiapkan cadangan terenkripsi dan lokasi pemulihan yang tetap berada dalam kendali pemerintah, serta menguji proses pemulihan secara berkala.
+
+### 4. Perbandingan dengan Public Cloud
+
+Public Cloud murni memiliki kelebihan karena kapasitas lebih mudah disesuaikan saat akses meningkat dan pemerintah tidak harus menyediakan seluruh perangkat sendiri. Namun, dalam kasus ini infrastruktur penyedia tidak berada dalam kendali penuh negara, sementara soal mensyaratkan data kependudukan tetap berada pada infrastruktur yang dikendalikan negara. Karena itu, kami memilih Private Cloud. Pilihan ini membawa tanggung jawab lebih besar untuk menyediakan kapasitas dan memelihara keamanan; penggunaan Private Cloud tidak otomatis membuat data aman.
+
+### Skenario tandingan
+
+Bagaimana jika dinas kependudukan di daerah tidak memiliki infrastruktur private cloud sendiri? Dinas tersebut tetap dapat mengakses layanan private cloud pemerintah yang dikelola secara terpusat melalui jaringan aman, tanpa harus membangun pusat data sendiri. Hak aksesnya dibatasi sesuai wilayah dan tugasnya. Jika jaringan ke pusat terputus, layanan yang membutuhkan akses langsung ke data pusat dapat tertunda; karena itu perlu koneksi cadangan dan prosedur pelayanan sementara yang tidak membuat salinan data sensitif tanpa pengamanan.
+
+## Diagram rancangan
+
+Diagram ini menggambarkan usulan alur akses dan penyimpanan, bukan bukti implementasi sistem.
+
+![Rancangan Private Cloud Kependudukan](bukti/diagram-private-cloud.svg)
+
+## Anggota dan kontribusi
+
+Kontribusi dicatat berdasarkan pekerjaan yang telah dilakukan; data NIM perlu dikonfirmasi kembali.
+
+| Nama | NIM | Kontribusi Tugas 9 |
+|---|---|---|
+| Annisa Nur Shadrina | 103072400134 |  Penyusunan analisis risiko, perbandingan alternatif, dan skenario tandingan  |
+| Alexandria Febrianti  | 103072400066 | Belum dikonfirmasi |
+| Wahyu | 103072400006 | Menyusun rekomendasi deployment dan service model serta mencatat proses diskusi di jurnal. |
+
 ## Struktur Submission
 
 ```
@@ -59,5 +89,4 @@ tugas-09-cloud-delivery-deployment/
 
 Kebijakan **Level 2 (AI Assisted Idea Generation & Structuring)** berlaku — lihat [`../RUBRIK-UMUM.md`](../RUBRIK-UMUM.md). Boleh bertanya ke AI gambaran umum karakteristik NIST/deployment model untuk brainstorming; **tidak boleh** meminta AI menuliskan rekomendasi/analisis akhir yang tinggal ditempel ke `README.md`. Catat pemakaian AI di "Log Penggunaan AI" pada `JURNAL.md`.
 
-- Jawaban yang terasa seperti "template" (bisa dipakai untuk sistem cloud apa saja tanpa menyebut spesifik kependudukan/data pribadi/regulasi) akan dinilai rendah pada komponen ketepatan rekomendasi.
-- `README.md` wajib membahas minimal satu skenario tandingan yang kalian buat sendiri (mis. "bagaimana jika instansi daerah tidak punya infrastruktur private cloud sendiri?") beserta jawabannya.
+

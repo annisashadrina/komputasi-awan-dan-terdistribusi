@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720" role="img" aria-labelledby="title desc">
+<title id="title">Rancangan Private Cloud Sistem Data Kependudukan</title>
+<desc id="desc">Instansi mengakses portal melalui jaringan aman dan kontrol akses. Portal terhubung ke database inti pada infrastruktur IaaS pemerintah dengan cadangan terenkripsi di lokasi pemulihan.</desc>
+<defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#46627f"/></marker></defs>
+<rect width="1200" height="720" fill="#f4f7fb"/>
+<text x="55" y="61" font-family="Segoe UI,Arial,sans-serif" font-size="30" font-weight="700" fill="#142e49">Rancangan Private Cloud Kependudukan</text>
+<text x="55" y="94" font-family="Segoe UI,Arial,sans-serif" font-size="16" fill="#536a80">Tugas 9 · Diagram konseptual, bukan implementasi sistem</text>
+<rect x="44" y="135" width="240" height="448" rx="16" fill="#fff" stroke="#cbd8e5" stroke-width="2"/>
+<text x="67" y="175" font-family="Segoe UI,Arial,sans-serif" font-size="20" font-weight="700" fill="#142e49">Instansi pengguna</text>
+<g font-family="Segoe UI,Arial,sans-serif" font-size="18" fill="#213f5c" text-anchor="middle">
+<rect x="67" y="215" width="194" height="65" rx="9" fill="#eaf1f8"/><text x="164" y="255">Dukcapil daerah</text>
+<rect x="67" y="305" width="194" height="65" rx="9" fill="#eaf1f8"/><text x="164" y="345">Kepolisian</text>
+<rect x="67" y="395" width="194" height="65" rx="9" fill="#eaf1f8"/><text x="164" y="435">Bank · verifikasi KYC</text></g>
+<rect x="320" y="135" width="835" height="448" rx="16" fill="#eaf4f1" stroke="#72a99a" stroke-width="2"/>
+<text x="347" y="174" font-family="Segoe UI,Arial,sans-serif" font-size="20" font-weight="700" fill="#164d45">Private Cloud pemerintah</text>
+<text x="347" y="200" font-family="Segoe UI,Arial,sans-serif" font-size="15" fill="#38675d">Infrastruktur dan kebijakan akses dikelola pemerintah</text>
+<g font-family="Segoe UI,Arial,sans-serif" text-anchor="middle" fill="#183c52">
+<rect x="347" y="295" width="153" height="110" rx="10" fill="#fff" stroke="#aec7cb"/><text x="423" y="329" font-size="17" font-weight="700">Jaringan aman</text><text x="423" y="355" font-size="14">Koneksi instansi</text><text x="423" y="376" font-size="14">ke layanan</text>
+<rect x="531" y="295" width="166" height="110" rx="10" fill="#fff" stroke="#aec7cb"/><text x="614" y="329" font-size="17" font-weight="700">Kontrol akses</text><text x="614" y="355" font-size="14">Autentikasi, hak</text><text x="614" y="376" font-size="14">akses dan audit</text>
+<rect x="728" y="295" width="165" height="110" rx="10" fill="#fff" stroke="#aec7cb"/><text x="810" y="329" font-size="17" font-weight="700">Portal instansi</text><text x="810" y="355" font-size="14">Aplikasi SaaS</text><text x="810" y="376" font-size="14">layanan verifikasi</text>
+<rect x="924" y="295" width="203" height="110" rx="10" fill="#fff" stroke="#aec7cb"/><text x="1025" y="329" font-size="17" font-weight="700">Database inti</text><text x="1025" y="355" font-size="14">NIK, alamat, biometrik</text><text x="1025" y="376" font-size="14">server &amp; storage IaaS</text>
+<rect x="870" y="465" width="257" height="79" rx="10" fill="#fff" stroke="#aec7cb"/><text x="998" y="497" font-size="16" font-weight="700">Cadangan terenkripsi</text><text x="998" y="521" font-size="14">Lokasi pemulihan pemerintah</text></g>
+<g stroke="#46627f" stroke-width="2.5" fill="none" marker-end="url(#arrow)"><path d="M284 350 H338"/><path d="M500 350 H522"/><path d="M697 350 H719"/><path d="M893 350 H915"/><path d="M1025 405 V455"/></g>
+<rect x="44" y="611" width="1111" height="62" rx="10" fill="#e4edf6"/>
+<text x="63" y="637" font-family="Segoe UI,Arial,sans-serif" font-size="15" fill="#294962">Akses diberikan sesuai kewenangan; hasil verifikasi dibatasi sesuai kebutuhan instansi.</text>
+<text x="63" y="658" font-family="Segoe UI,Arial,sans-serif" font-size="15" fill="#294962">Kapasitas cadangan dan pemantauan membantu menghadapi lonjakan permintaan.</text>
+</svg>
